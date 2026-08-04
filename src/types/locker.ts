@@ -1,11 +1,10 @@
-// Tamaños físicos del casillero.
+
 export type LockerSize = 'S' | 'M' | 'L';
 
-// Estado de la puerta: independiente de si el casillero está ocupado.
+
 export type DoorStatus = 'abierto' | 'cerrado';
 
-// Estado de ocupación: independiente de si la puerta está abierta.
-// Nota: se usa "vacio" sin tilde como valor de dominio (ver DECISIONES-FRONTEND.md).
+
 export type OccupancyStatus = 'ocupado' | 'vacio';
 
 export interface Locker {
@@ -14,31 +13,34 @@ export interface Locker {
   size: LockerSize;
   doorStatus: DoorStatus;
   occupancyStatus: OccupancyStatus;
+  isMaintenance: boolean;
   updatedAt?: string;
 }
 
 export interface Booking {
   id: string;
   lockerId: string;
-  startTime: string; // ISO 8601
-  endTime: string; // ISO 8601
+  startTime: string;
+  endTime: string;
   note?: string;
   createdAt?: string;
-  // Campos opcionales por si el backend enriquece la reserva con datos del
-  // casillero (evita tener que cruzar con /lockers en el cliente).
   lockerCode?: string;
   lockerSize?: LockerSize;
 }
-
 export interface StatusMeta {
   label: string;
-  tone: 'available' | 'available-open' | 'occupied' | 'alert';
+  tone: 'available' | 'available-open' | 'occupied' | 'alert' | 'maintenance';
 }
 
-// Regla de negocio central de la vista: cruza puerta x ocupación en 4 estados
-// visuales. El único estado de "alerta" real es casillero ocupado con la
-// puerta abierta, porque implica un riesgo de seguridad para el contenido.
-export function getStatusMeta(door: DoorStatus, occupancy: OccupancyStatus): StatusMeta {
+
+export function getStatusMeta(
+  door: DoorStatus,
+  occupancy: OccupancyStatus,
+  isMaintenance = false,
+): StatusMeta {
+  if (isMaintenance) {
+    return { label: 'En mantenimiento', tone: 'maintenance' };
+  }
   if (occupancy === 'vacio' && door === 'cerrado') {
     return { label: 'Disponible', tone: 'available' };
   }

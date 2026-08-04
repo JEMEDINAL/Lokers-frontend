@@ -2,7 +2,7 @@ import { getStatusMeta, type Locker } from '../types/locker';
 import { SizeGlyph } from './SizeGlyph';
 
 export function LockerTile({ locker, onClick }: { locker: Locker; onClick: () => void }) {
-  const status = getStatusMeta(locker.doorStatus, locker.occupancyStatus);
+  const status = getStatusMeta(locker.doorStatus, locker.occupancyStatus, locker.isMaintenance);
 
   return (
     <button className="locker-tile" onClick={onClick}>

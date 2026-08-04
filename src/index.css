@@ -19,6 +19,9 @@
   --color-alert: #e03131;
   --color-alert-bg: #fdebec;
 
+  --color-maintenance: #6741d9;
+  --color-maintenance-bg: #efeafd;
+
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 10px;
@@ -143,6 +146,17 @@ a:focus-visible {
   background: transparent;
   border-color: var(--color-border);
   color: var(--color-ink);
+}
+
+.btn-danger {
+  background: var(--color-alert-bg);
+  color: var(--color-alert);
+  border-color: transparent;
+}
+
+.btn-danger:hover {
+  background: var(--color-alert);
+  color: #fff;
 }
 
 .btn-sm {
@@ -327,6 +341,10 @@ a:focus-visible {
   color: var(--color-alert);
   background: var(--color-alert-bg);
 }
+.tone-maintenance {
+  color: var(--color-maintenance);
+  background: var(--color-maintenance-bg);
+}
 
 .strip-available {
   background: var(--color-available);
@@ -339,6 +357,9 @@ a:focus-visible {
 }
 .strip-alert {
   background: var(--color-alert);
+}
+.strip-maintenance {
+  background: var(--color-maintenance);
 }
 
 /* ---------- Drawer ---------- */

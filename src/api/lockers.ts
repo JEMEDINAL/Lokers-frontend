@@ -12,6 +12,7 @@ export function getLocker(id: string, token?: string | null): Promise<Locker> {
 export interface UpdateStatusPayload {
   doorStatus?: DoorStatus;
   occupancyStatus?: OccupancyStatus;
+  isMaintenance?: boolean;
 }
 
 export function updateLockerStatus(
@@ -36,6 +37,13 @@ export function createLocker(payload: CreateLockerPayload, token: string): Promi
   return apiFetch<Locker>('/lockers', {
     method: 'POST',
     body: JSON.stringify(payload),
+    token,
+  });
+}
+
+export function deleteLocker(id: string, token: string): Promise<void> {
+  return apiFetch<void>(`/lockers/${id}`, {
+    method: 'DELETE',
     token,
   });
 }

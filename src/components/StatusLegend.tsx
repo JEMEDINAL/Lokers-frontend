@@ -3,6 +3,7 @@ const ITEMS = [
   { tone: 'available-open', label: 'Disponible · puerta abierta' },
   { tone: 'occupied', label: 'Ocupado' },
   { tone: 'alert', label: 'Ocupado · puerta abierta (alerta)' },
+  { tone: 'maintenance', label: 'En mantenimiento' },
 ] as const;
 
 export function StatusLegend() {

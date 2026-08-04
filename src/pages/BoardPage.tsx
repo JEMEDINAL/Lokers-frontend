@@ -41,6 +41,11 @@ export function BoardPage() {
     refresh();
   }
 
+  function handleDeleted(_lockerId: string) {
+    setSelected(null);
+    refresh();
+  }
+
   return (
     <div className="page">
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem' }}>
@@ -91,7 +96,12 @@ export function BoardPage() {
       )}
 
       {selected && (
-        <LockerDrawer locker={selected} onClose={() => setSelected(null)} onUpdated={handleUpdated} />
+        <LockerDrawer
+          locker={selected}
+          onClose={() => setSelected(null)}
+          onUpdated={handleUpdated}
+          onDeleted={handleDeleted}
+        />
       )}
 
       {showCreateLocker && (
