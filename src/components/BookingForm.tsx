@@ -42,8 +42,6 @@ export function BookingForm({lockerId,lockerCode,userName, onSubmit }: Props) {
       note: note || undefined,
     };
 
-    // Imprime los datos en la consola
-    console.log('Objeto completo a enviar al backend:', payload);
 
     setSubmitting(true);
     try {

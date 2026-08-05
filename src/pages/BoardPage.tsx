@@ -22,7 +22,7 @@ type BoardFilter = LockerSize | 'ALL' | 'RESERVED';
 export function BoardPage() {
   const { token, isAdmin } = useAuth();
   const { lockers, loading, error, refresh } = useLockers();
-  const { bookings: myBookings, loading: myBookingsLoading, refresh: refreshMyBookings } = useMyBookings();
+  const { bookings: myBookings, loading: myBookingsLoading, refresh: refreshMyBookings, finishBooking, openDoor } = useMyBookings();
   const [filter, setFilter] = useState<BoardFilter>('ALL');
   const [selected, setSelected] = useState<Locker | null>(null);
   const [showCreateLocker, setShowCreateLocker] = useState(false);
@@ -105,7 +105,7 @@ export function BoardPage() {
         myBookingsLoading ? (
           <div className="loader">Cargando tus reservas…</div>
         ) : (
-          <MyBookingsList bookings={myBookings} />
+          <MyBookingsList bookings={myBookings} onEndBooking={finishBooking} onOpenDoor={openDoor}/>
         )
       ) : loading ? (
         <div className="loader">Cargando casilleros…</div>

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getUserBookings } from '../api/users';
+import { endBooking, openBookingDoor } from '../api/bookings';
 import type { Booking } from '../types/locker';
 import { useAuth } from '../context/AuthContext';
 
@@ -28,5 +29,23 @@ export function useMyBookings() {
     refresh();
   }, [refresh]);
 
-  return { bookings, loading, refresh };
+  const finishBooking = useCallback(
+    async (bookingId: number) => {
+      if (!token) return;
+      await endBooking(bookingId, token);
+      await refresh();
+    },
+    [token, refresh],
+  );
+
+  const openDoor = useCallback(
+    async (bookingId: number) => {
+      if (!token) return;
+      await openBookingDoor(bookingId, token);
+      await refresh();
+    },
+    [token, refresh],
+  );
+
+  return { bookings, loading, refresh, finishBooking, openDoor };
 }

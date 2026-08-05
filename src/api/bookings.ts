@@ -2,7 +2,9 @@ import { apiFetch } from './client';
 import type { Booking } from '../types/locker';
 
 export function getBookings(lockerId: string, token?: string | null): Promise<Booking[]> {
-  return apiFetch<Booking[]>(`/lockers/${lockerId}/bookings`, { token });
+  return apiFetch<Booking[]>(`/reservations`, { token }).then((all) =>
+    all.filter((b) => String(b.lockerId) === String(lockerId)),
+  );
 }
 
 export function getMyBookings(
@@ -33,6 +35,20 @@ export function createBooking(
   return apiFetch<Booking>(`/reservations`, {
     method: 'POST',
     body: JSON.stringify(payload), 
+    token,
+  });
+}
+
+export function endBooking(bookingId: number, token: string): Promise<void> {
+  return apiFetch<void>(`/reservations/${bookingId}/end`, {
+    method: 'DELETE',
+    token,
+  });
+}
+
+export function openBookingDoor(bookingId: number, token: string): Promise<Booking> {
+  return apiFetch<Booking>(`/reservations/${bookingId}/open-door`, {
+    method: 'PATCH',
     token,
   });
 }

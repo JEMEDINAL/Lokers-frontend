@@ -70,13 +70,13 @@ export function LockerDrawer({ locker, onClose, onUpdated, onDeleted }: Props) {
   }
 
   async function handleCreateBooking(payload: {
-  lockerId: number;
-  reservedBy: string;
-  lockerCode: string;
-  startTime: string;
-  endTime: string;
-  note?: string;
-}) {
+    lockerId: number;
+    reservedBy: string;
+    lockerCode: string;
+    startTime: string;
+    endTime: string;
+    note?: string;
+  }) {
     if (!token) throw new Error('Debes iniciar sesión para agendar.');
     const booking = await createBooking(current.id, payload, token);
     setBookings((prev) => [...prev, booking].sort((a, b) => a.startTime.localeCompare(b.startTime)));
@@ -172,12 +172,6 @@ export function LockerDrawer({ locker, onClose, onUpdated, onDeleted }: Props) {
                 ))}
               </div>
 
-              {current.isMaintenance && (
-                <p className="hint">
-                  Mientras esté en mantenimiento no se puede cambiar puerta ni ocupación. Vuelve a "Operativo"
-                  primero.
-                </p>
-              )}
 
               {statusError && <div className="banner banner-error" style={{ marginTop: '0.7rem' }}>{statusError}</div>}
             </>
@@ -193,8 +187,15 @@ export function LockerDrawer({ locker, onClose, onUpdated, onDeleted }: Props) {
           ) : (
             <BookingList bookings={bookings} />
           )}
-          {token ? (
-            <BookingForm lockerCode={current.code} lockerId={current.id}userName={claims?.username ? String(claims.username) : claims?.sub ? String(claims.sub) : undefined} onSubmit={handleCreateBooking} />
+          {current.isMaintenance ? (
+            <p className="hint">No es posible agendar este casillero porque está en mantenimiento.</p>
+          ) : token ? (
+            <BookingForm
+              lockerCode={current.code}
+              lockerId={current.id}
+              userName={claims?.username ? String(claims.username) : claims?.sub ? String(claims.sub) : undefined}
+              onSubmit={handleCreateBooking}
+            />
           ) : (
             <p className="hint">Inicia sesión para agendar este casillero.</p>
           )}
