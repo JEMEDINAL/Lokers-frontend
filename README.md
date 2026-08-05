@@ -1,12 +1,9 @@
 # Locker Frontend
 
 Frontend en React + TypeScript (Vite) para el sistema de alquiler de casilleros
-de la prueba técnica. Consume una API REST (se asume NestJS) para listar
-casilleros, cambiar su estado (solo administrador) y agendar su uso.
+de la prueba técnica. Consume una API REST  en NestJS para listar
+casilleros, cambiar su estado  y agendar su uso.
 
-> Este repositorio contiene **solo el frontend**. Necesitas un backend
-> corriendo (o mockeado) que cumpla el contrato descrito en
-> `DECISIONES-FRONTEND.md` para que la app funcione end-to-end.
 
 ## Requisitos
 
@@ -35,7 +32,7 @@ npm run preview
 
 ```
 src/
-  api/            # capa de acceso HTTP (fetch) al backend
+  api/            # capa de acceso HTTP  al backend
   components/     # componentes de UI reutilizables
   context/        # AuthContext (sesión de administrador)
   hooks/          # hooks de datos (useLockers)
@@ -60,5 +57,4 @@ src/
 | `VITE_API_URL`  | URL base del backend NestJS           | `http://localhost:3000` |
 
 Ver `DECISIONES-FRONTEND.md` para el contrato de API asumido, las
-decisiones de diseño y los supuestos tomados por no tener el backend
-implementado en este repositorio.
+decisiones de diseño.
