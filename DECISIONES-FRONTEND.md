@@ -214,15 +214,3 @@ propias reservas activas desde la pestaña "Mis reservas" del tablero.
   usuarios creados por esta vía, así que el formulario no pide el rol.
 
 
-Ver `README.md` para el detalle de backend + Docker + PM2. Resumen del
-frontend:
-
-```bash
-npm install
-cp .env.example .env   # define VITE_API_URL, por defecto http://localhost:3000
-npm run dev
-```
-
-Requiere el backend corriendo en `VITE_API_URL` (ver sección "Cómo levantar
-el proyecto" del `README.md` para las tres formas de levantarlo: local,
-Docker Compose o PM2 standalone).
