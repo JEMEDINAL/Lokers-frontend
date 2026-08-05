@@ -18,14 +18,15 @@ export interface Locker {
 }
 
 export interface Booking {
-  id: string;
-  lockerId: string;
+  id: number;
+  lockerId: number;
+  reservedBy: string;
+  codeLoker: string;
   startTime: string;
   endTime: string;
+  createdAt: string;
   note?: string;
-  createdAt?: string;
-  lockerCode?: string;
-  lockerSize?: LockerSize;
+  locker: Locker;
 }
 export interface StatusMeta {
   label: string;

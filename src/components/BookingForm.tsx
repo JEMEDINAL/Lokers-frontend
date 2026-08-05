@@ -1,10 +1,20 @@
 import { useState, type FormEvent } from 'react';
 
 interface Props {
-  onSubmit: (payload: { startTime: string; endTime: string; note?: string }) => Promise<void>;
+  lockerId: string | number;
+  lockerCode: string;
+  userName?: string | number;
+  onSubmit: (payload: {
+    lockerId: number;
+    reservedBy: string; 
+    lockerCode: string;
+    startTime: string;
+    endTime: string;
+    note?: string;
+  }) => Promise<void>;
 }
 
-export function BookingForm({ onSubmit }: Props) {
+export function BookingForm({lockerId,lockerCode,userName, onSubmit }: Props) {
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
   const [note, setNote] = useState('');
@@ -23,14 +33,21 @@ export function BookingForm({ onSubmit }: Props) {
       setError('La hora de fin debe ser posterior a la hora de inicio.');
       return;
     }
+   const payload = {
+      lockerId: Number(lockerId),
+      reservedBy: userName ? String(userName) : 'Usuario anónimo',
+      lockerCode,
+      startTime: new Date(start).toISOString(),
+      endTime: new Date(end).toISOString(),
+      note: note || undefined,
+    };
+
+    // Imprime los datos en la consola
+    console.log('Objeto completo a enviar al backend:', payload);
 
     setSubmitting(true);
     try {
-      await onSubmit({
-        startTime: new Date(start).toISOString(),
-        endTime: new Date(end).toISOString(),
-        note: note || undefined,
-      });
+      await onSubmit(payload);
       setStart('');
       setEnd('');
       setNote('');

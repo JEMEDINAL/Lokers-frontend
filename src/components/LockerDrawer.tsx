@@ -16,7 +16,7 @@ interface Props {
 }
 
 export function LockerDrawer({ locker, onClose, onUpdated, onDeleted }: Props) {
-  const { token, isAdmin } = useAuth();
+  const { token, isAdmin, claims } = useAuth();
   const [current, setCurrent] = useState(locker);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [bookingsLoading, setBookingsLoading] = useState(true);
@@ -69,10 +69,18 @@ export function LockerDrawer({ locker, onClose, onUpdated, onDeleted }: Props) {
     }
   }
 
-  async function handleCreateBooking(payload: { startTime: string; endTime: string; note?: string }) {
+  async function handleCreateBooking(payload: {
+  lockerId: number;
+  reservedBy: string;
+  lockerCode: string;
+  startTime: string;
+  endTime: string;
+  note?: string;
+}) {
     if (!token) throw new Error('Debes iniciar sesión para agendar.');
     const booking = await createBooking(current.id, payload, token);
     setBookings((prev) => [...prev, booking].sort((a, b) => a.startTime.localeCompare(b.startTime)));
+    onUpdated(current);
   }
 
   async function handleDelete() {
@@ -186,7 +194,7 @@ export function LockerDrawer({ locker, onClose, onUpdated, onDeleted }: Props) {
             <BookingList bookings={bookings} />
           )}
           {token ? (
-            <BookingForm onSubmit={handleCreateBooking} />
+            <BookingForm lockerCode={current.code} lockerId={current.id}userName={claims?.username ? String(claims.username) : claims?.sub ? String(claims.sub) : undefined} onSubmit={handleCreateBooking} />
           ) : (
             <p className="hint">Inicia sesión para agendar este casillero.</p>
           )}

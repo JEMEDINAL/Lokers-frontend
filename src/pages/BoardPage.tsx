@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { Locker, LockerSize } from '../types/locker';
 import { useLockers } from '../hooks/useLockers';
+import { useMyBookings } from '../hooks/useMyBookings';
 import { useAuth } from '../context/AuthContext';
 import { LockerTile } from '../components/LockerTile';
 import { LockerDrawer } from '../components/LockerDrawer';
@@ -8,6 +9,7 @@ import { StatusLegend } from '../components/StatusLegend';
 import { ErrorBanner } from '../components/ErrorBanner';
 import { Modal } from '../components/Modal';
 import { CreateLockerForm } from '../components/CreateLockerForm';
+import { MyBookingsList } from '../components/MyBookingsList';
 
 const SIZES: LockerSize[] = ['S', 'M', 'L'];
 const SIZE_LABEL: Record<LockerSize, string> = {
@@ -15,25 +17,40 @@ const SIZE_LABEL: Record<LockerSize, string> = {
   M: 'Medianos (M)',
   L: 'Grandes (L)',
 };
+type BoardFilter = LockerSize | 'ALL' | 'RESERVED';
 
 export function BoardPage() {
-  const { isAdmin } = useAuth();
+  const { token, isAdmin } = useAuth();
   const { lockers, loading, error, refresh } = useLockers();
-  const [filter, setFilter] = useState<LockerSize | 'ALL'>('ALL');
+  const { bookings: myBookings, loading: myBookingsLoading, refresh: refreshMyBookings } = useMyBookings();
+  const [filter, setFilter] = useState<BoardFilter>('ALL');
   const [selected, setSelected] = useState<Locker | null>(null);
   const [showCreateLocker, setShowCreateLocker] = useState(false);
 
+  const canSeeMyBookings = Boolean(token && !isAdmin);
+
+  const myActiveLockerIds = useMemo(() => {
+    if (!canSeeMyBookings) return new Set<number>();
+    const now = Date.now();
+    return new Set(
+      myBookings.filter((b) => new Date(b.endTime).getTime() > now).map((b) => b.lockerId),
+    );
+  }, [myBookings, canSeeMyBookings]);
+
   const grouped = useMemo(() => {
-    const filtered = filter === 'ALL' ? lockers : lockers.filter((l) => l.size === filter);
+    if (filter === 'RESERVED') return [];
+    const visible = lockers.filter((l) => !myActiveLockerIds.has(Number(l.id)));
+    const filtered = filter === 'ALL' ? visible : visible.filter((l) => l.size === filter);
     return SIZES.map((size) => ({
       size,
       items: filtered.filter((l) => l.size === size),
     })).filter((group) => group.items.length > 0);
-  }, [lockers, filter]);
+  }, [lockers, filter, myActiveLockerIds]);
 
   function handleUpdated(updated: Locker) {
     setSelected(updated);
     refresh();
+    refreshMyBookings();
   }
 
   function handleLockerCreated(_locker: Locker) {
@@ -44,6 +61,7 @@ export function BoardPage() {
   function handleDeleted(_lockerId: string) {
     setSelected(null);
     refresh();
+    refreshMyBookings();
   }
 
   return (
@@ -74,11 +92,22 @@ export function BoardPage() {
             {SIZE_LABEL[size]}
           </button>
         ))}
+        {canSeeMyBookings && (
+          <button aria-pressed={filter === 'RESERVED'} onClick={() => setFilter('RESERVED')}>
+            Mis reservas
+          </button>
+        )}
       </div>
 
-      {error && <ErrorBanner message={error} />}
+      {error && filter !== 'RESERVED' && <ErrorBanner message={error} />}
 
-      {loading ? (
+      {filter === 'RESERVED' ? (
+        myBookingsLoading ? (
+          <div className="loader">Cargando tus reservas…</div>
+        ) : (
+          <MyBookingsList bookings={myBookings} />
+        )
+      ) : loading ? (
         <div className="loader">Cargando casilleros…</div>
       ) : grouped.length === 0 ? (
         <div className="empty-state">No hay casilleros para mostrar con este filtro.</div>
