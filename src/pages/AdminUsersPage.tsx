@@ -44,31 +44,31 @@ export function AdminUsersPage() {
       .finally(() => setLoading(false));
   }, [token, isAdmin]);
 
-  async function toggleUser(userId: string) {
-    if (expandedUserId === userId) {
-      setExpandedUserId(null);
-      return;
-    }
-    setExpandedUserId(userId);
-    if (bookingsByUser[userId] || !token) return;
-
-    setBookingsLoading(true);
-    setBookingsError(null);
-    try {
-      const data = await getUserBookings(userId, token);
-      setBookingsByUser((prev) => ({ ...prev, [userId]: data }));
-    } catch (err) {
-      setBookingsError(err instanceof Error ? err.message : 'No se pudieron cargar las reservas de este usuario.');
-    } finally {
-      setBookingsLoading(false);
-    }
+  async function toggleUser(user: AppUser) {
+  if (expandedUserId === user.id) {
+    setExpandedUserId(null);
+    return;
   }
+  setExpandedUserId(user.id);
+  if (bookingsByUser[user.id] || !token) return;
+
+  setBookingsLoading(true);
+  setBookingsError(null);
+  try {
+    const data = await getUserBookings(user.username, token);
+    setBookingsByUser((prev) => ({ ...prev, [user.id]: data }));
+  } catch (err) {
+    setBookingsError(err instanceof Error ? err.message : 'No se pudieron cargar las reservas de este usuario.');
+  } finally {
+    setBookingsLoading(false);
+  }
+}
 
   function lockerLabel(booking: Booking): string {
-    if (booking.lockerCode) return booking.lockerCode;
-    const locker = lockersById[booking.lockerId];
-    return locker ? locker.code : booking.lockerId;
-  }
+  if (booking.codeLoker) return booking.codeLoker;
+  const locker = lockersById[String(booking.lockerId)];
+  return locker ? locker.code : String(booking.lockerId);
+}
 
   function handleAdminCreated(user: AppUser) {
     setUsers((prev) => [...prev, user]);
@@ -123,7 +123,7 @@ export function AdminUsersPage() {
                 key={u.id}
                 user={u}
                 expanded={expandedUserId === u.id}
-                onToggle={() => toggleUser(u.id)}
+                onToggle={() => toggleUser(u)}
                 bookings={bookingsByUser[u.id]}
                 loading={bookingsLoading && expandedUserId === u.id && !bookingsByUser[u.id]}
                 error={expandedUserId === u.id ? bookingsError : null}
